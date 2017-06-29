@@ -12,4 +12,15 @@ class Graph::Edge
   def length
     vertex_1.distance_to(vertex_2)
   end
+
+  # Comparison method. Compares this edge to another. Used to sort the edges
+  def <=>(other)
+    self.length <=> other.length
+  end
+
+  # "to_string" method used to represent this object as a string
+  # Format: v1_id-v2_id, example: '3-42'
+  def to_s
+    "#{vertex_1.id}-#{vertex_2.id}"
+  end
 end
