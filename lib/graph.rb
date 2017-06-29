@@ -47,6 +47,16 @@ class Graph
     edges << Graph::Edge.new(from, to)
   end
 
+  # Transoforms the vertices into a string to be passed to the views
+  def serialize_vertices
+    vertices.map(&:to_s).join(',')
+  end
+
+  # Transoforms the edges into a string to be passed to the views
+  def serialize_edges
+    edges.map(&:to_s).join(',')
+  end
+
   # "to_string" method used to represent this object as a string
   def to_s
     "Graph (#{vertices.size} vertices, #{edges.size} edges) "
