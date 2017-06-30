@@ -6,4 +6,6 @@ end
 
 # Loads the needed classes and modules for the program
 autoload_module 'graph'
-autoload_module 'djikstra'
+autoload_module 'f_heap'
+autoload_module 'priority_queue'
+autoload_module 'dijkstra'
