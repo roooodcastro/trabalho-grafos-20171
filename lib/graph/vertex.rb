@@ -1,6 +1,6 @@
 # Represents a graph vertex
 class Graph::Vertex
-  attr_reader :x, :y, :id
+  attr_reader :x, :y, :id, :edges
 
   # Static (class) methods
   class << self
@@ -24,6 +24,24 @@ class Graph::Vertex
   def initialize(pos_x, pos_y)
     @x = pos_x
     @y = pos_y
+    @edges = []
+  end
+
+  # Adds an edge as neighbour of this vertex
+  def add_edge(edge)
+    edges << edge
+  end
+
+  # Return this vertex's neighbours, as vertices
+  def neighbours
+    edges.map { |edge| edge.other_vertex(self) }
+  end
+
+  # Returns the N closest neighbours to this vertex, where N is amount. If N is
+  # bigger than the total number of neighbours, all neighbours will be returned
+  def closest_edges(amount, excluded_edges)
+    amount = [amount, neighbours.size].min
+    (edges - excluded_edges)[0..(amount - 1)]
   end
 
   # Calculates the distance between this vertex and another one
@@ -37,6 +55,14 @@ class Graph::Vertex
   # information.
   def set_id(id)
     @id = id
+  end
+
+  # Compares to vertices. Two vertices are the same if they occupy the same
+  # point. In theory, there could be two different vertices that occupy the same
+  # point, and therefore are wrongly assumed to be equal, but I'm hoping this
+  # doesn't happen here...
+  def <=>(other)
+    x == other.x && y == other.y
   end
 
   # "to_string" method used to represent this object as a string

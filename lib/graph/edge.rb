@@ -13,6 +13,14 @@ class Graph::Edge
     vertex_1.distance_to(vertex_2)
   end
 
+  # Given a vertex belonging to this edge, this method returns the other vertex
+  # that is included in the edge. If vertex is not in this edge, nil is returned
+  def other_vertex(vertex)
+    return nil unless vertex_1 == vertex || vertex_2 == vertex
+    return vertex_1 if vertex == vertex_2
+    vertex_2
+  end
+
   # Comparison method. Compares this edge to another. Used to sort the edges
   def <=>(other)
     self.length <=> other.length

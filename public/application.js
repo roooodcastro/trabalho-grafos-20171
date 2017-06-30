@@ -12,8 +12,8 @@ Object.size = function(obj) {
 $(document).ready(function() {
     $canvas = $('#canvas')[0];
     $ctx = $canvas.getContext('2d');
-    $($canvas).attr('width', 1200);
-    $($canvas).attr('height', 700);
+    $($canvas).attr('width', $($canvas).parent().width() - 15);
+    $($canvas).attr('height', $('body').height() - 165);
 
     var verticesString = $($canvas).data('vertices');
 
@@ -68,7 +68,7 @@ function drawEdge(fromX, fromY, toX, toY) {
         $ctx.beginPath();
         $ctx.moveTo(fromX, fromY);
         $ctx.lineTo(toX, toY);
-        $ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        $ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         $ctx.stroke();
     });
 }

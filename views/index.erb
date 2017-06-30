@@ -1,10 +1,12 @@
-<h1>Algoritmo de Djikstra para <%= @graph %></h1>
+<header>
+  <h1>Algoritmo de Djikstra para <%= @graph %></h1>
+</header>
 
 <div class="row">
   <div class="col text-center">
-    <canvas id="canvas" width="1200px" height="700px"
+    <canvas id="canvas"
             data-vertices="<%= @graph.serialize_vertices %>"
-            data-edges="<%= @graph.serialize_edges %>">
+            data-edges="<%= @graph.serialize_edges(@graph.filtered_edges) %>">
     </canvas>
   </div>
 </div>
