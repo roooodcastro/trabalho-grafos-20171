@@ -1,41 +1,44 @@
 # The implementation of the Dijkstra algorithm
 class Dijkstra
-  attr_reader :graph, :root_vertex
+  attr_reader :graph, :root_vertex, :distances, :previous
 
   # Class constructor. Initializes it with a graph and picks a random vertex
   # to be the root.
   def initialize(graph)
     @graph = graph
     @root_vertex = graph.vertices.sample
+    @distances = {}
+    @previous = {}
   end
 
   def run
-    distances = {}
-    previous = {}
-    distances[root_vertex] = 0
+    queue = initialize_dijkstra
 
-    queue = PriorityQueue.new
-
-    graph.vertices.each do |vertex|
-      next if vertex == root_vertex
-      distances[vertex] = Float::INFINITY
-      previous[vertex] = nil
-
-      queue.add_with_priority(vertex, distances[vertex])
-
-      while queue.empty do
-        u = queue.extract_min
-        e.neighbours.each do
-          alt = distances[u] + length(u, vertex)
-          if alt < distances[vertex]
-            distances[vertex] = alt
-            prev[vertex] = u
-            queue.decrease_priority(vertex, alt)
-
-            return distances[], prev[]
-          end
-        end
+    while queue.present? do
+      min_node = queue.extract_minimum
+      min_node.edges.each do |edge|
+        neighbour = edge.other_vertex(min_node)
+        try_to_change_previous(neighbour, min_node, edge.length, queue)
       end
+    end
+  end
+
+  def initialize_dijkstra
+    root_vertex.distance = 0
+    queue = PriorityQueue.new
+    graph.vertices.each do |vertex|
+      vertex.distance = Float::INFINITY unless vertex == root_vertex
+      previous[vertex] = nil
+      queue.insert(vertex)
+    end
+    queue
+  end
+
+  def try_to_change_previous(vertex, possible_previous, distance, queue)
+    new_distance = possible_previous.distance + distance
+    if new_distance < vertex.distance
+      previous[vertex] = possible_previous
+      queue.decrease_distance(vertex, new_distance)
     end
   end
 end

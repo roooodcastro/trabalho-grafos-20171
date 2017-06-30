@@ -1,5 +1,8 @@
 # Represents a graph vertex
 class Graph::Vertex
+  include Comparable
+
+  attr_accessor :distance
   attr_reader :x, :y, :id, :edges
 
   # Static (class) methods
@@ -25,6 +28,7 @@ class Graph::Vertex
     @x = pos_x
     @y = pos_y
     @edges = []
+    @distance = Float::INFINITY
   end
 
   # Adds an edge as neighbour of this vertex
@@ -62,7 +66,17 @@ class Graph::Vertex
   # point, and therefore are wrongly assumed to be equal, but I'm hoping this
   # doesn't happen here...
   def <=>(other)
-    x == other.x && y == other.y
+    return nil unless other.is_a? Graph::Vertex
+
+    if distance != other.distance
+      distance <=> other.distance
+    else
+      [x, y] <=> [other.x, other.y]
+    end
+  end
+
+  def inspect
+    to_s
   end
 
   # "to_string" method used to represent this object as a string
