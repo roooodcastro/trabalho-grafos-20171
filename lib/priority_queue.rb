@@ -45,6 +45,7 @@ class PriorityQueue
   # position it. This is needed after a decrease_distance or insert operation,
   # when we possibly can have an element with a low distance in the wrong place
   def bubble_up(index)
+    return unless index
     parent_index = (index / 2)
 
     return if index <= 1

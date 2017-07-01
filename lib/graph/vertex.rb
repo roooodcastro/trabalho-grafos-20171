@@ -2,8 +2,8 @@
 class Graph::Vertex
   include Comparable
 
-  attr_accessor :distance
-  attr_reader :x, :y, :id, :edges
+  attr_accessor :distance, :previous, :id
+  attr_reader :x, :y, :edges
 
   # Static (class) methods
   class << self
@@ -29,11 +29,17 @@ class Graph::Vertex
     @y = pos_y
     @edges = []
     @distance = Float::INFINITY
+    @previous = nil
   end
 
   # Adds an edge as neighbour of this vertex
   def add_edge(edge)
     edges << edge
+  end
+
+  # Removes the specified edges from the neighbours
+  def remove_edges(edges_to_remove)
+    @edges = @edges - edges_to_remove
   end
 
   # Return this vertex's neighbours, as vertices
@@ -43,22 +49,22 @@ class Graph::Vertex
 
   # Returns the N closest neighbours to this vertex, where N is amount. If N is
   # bigger than the total number of neighbours, all neighbours will be returned
-  def closest_edges(amount, excluded_edges)
+  def closest_edges(amount)
     amount = [amount, neighbours.size].min
-    (edges - excluded_edges)[0..(amount - 1)]
+    edges[0..(amount - 1)]
+  end
+
+  # Returns all edges except the N closest neighbours to this vertex, where N
+  # is amount. If N is bigger than the total number of neighbours, no
+  # neighbours will be returned
+  def farthest_edges(amount)
+    amount = [amount, neighbours.size].min
+    edges[amount..(edges.size - 1)]
   end
 
   # Calculates the distance between this vertex and another one
   def distance_to(another_vertex)
     Graph::Vertex.distance(self, another_vertex)
-  end
-
-  # Sets the id for this vertex. The id is assigned by the graph to identify a
-  # vertex and is used by the edge to know which vertices they connect. This is
-  # done to save bandwidth when we need to generate the HTML page with all edge
-  # information.
-  def set_id(id)
-    @id = id
   end
 
   # Compares to vertices. Two vertices are the same if they occupy the same
@@ -82,6 +88,6 @@ class Graph::Vertex
   # "to_string" method used to represent this object as a string
   # Format: id-x-y, example: '3-0.23478437-0.84736196'
   def to_s
-    [id, x, y].join('-')
+    [x, y, previous&.id].join('-')
   end
 end

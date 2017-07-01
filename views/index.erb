@@ -6,7 +6,7 @@
   <div class="col text-center">
     <canvas id="canvas"
             data-vertices="<%= @graph.serialize_vertices %>"
-            data-edges="<%= @graph.serialize_edges(@graph.filtered_edges) %>">
+            data-edges="<%= @graph.serialize_edges(@graph.edges) %>">
     </canvas>
   </div>
 </div>

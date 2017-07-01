@@ -18,8 +18,9 @@ class Graph
       graph.vertices.combination(2).each do |vertex_1, vertex_2|
         graph.create_edge(vertex_1, vertex_2)
       end
-      # Sort each vertex's edge array
+      # Sort each vertex's edge array and filter out far ones
       graph.vertices.each { |vertex| vertex.edges.sort! }
+      graph.filter_edges
       # Return the created graph
       graph
     end
@@ -35,7 +36,7 @@ class Graph
   # position in the array. This will break if a vertex is removed, but this is
   # not done here so I think it's safe.
   def add_vertex(vertex)
-    vertex.set_id(vertices.size)
+    vertex.id = vertices.size
     vertices << vertex
   end
 
@@ -54,12 +55,17 @@ class Graph
 
   # "Filter" the edges of each vertex, only allowing the nearest K neighbours
   # for each vertex, where K is log2(vertices.size)
-  def filtered_edges
+  def filter_edges
     k = Math.log2(vertices.size).ceil
-    selected_edges = vertices.inject([]) do |selected_edges, vertex|
-      selected_edges + vertex.closest_edges(k, selected_edges)
+    vertices.each do |vertex|
+      far_edges = vertex.farthest_edges(k)
+      vertex.remove_edges(far_edges)
+      @edges = @edges - far_edges
     end
-    selected_edges.flatten.uniq
+    # selected_edges = vertices.inject([]) do |selected_edges, vertex|
+    #   selected_edges + vertex.closest_edges(k)
+    # end
+    # selected_edges.flatten.uniq
   end
 
   # Transoforms the vertices into a string to be passed to the views
@@ -74,6 +80,6 @@ class Graph
 
   # "to_string" method used to represent this object as a string
   def to_s
-    "Graph (#{vertices.size} vertices, #{filtered_edges.size} edges) "
+    "Graph (#{vertices.size} vertices, #{edges.size} edges) "
   end
 end
