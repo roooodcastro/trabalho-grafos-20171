@@ -2,8 +2,8 @@
 class Graph
   attr_reader :vertices, :edges
 
-  # Limits the floating point precision to 8 decimal places
-  FLOAT_PRECISION = 8
+  # Limits the floating point precision to 6 decimal places (no need for more)
+  FLOAT_PRECISION = 6
 
   # Static (class) methods
   class << self
@@ -11,16 +11,22 @@ class Graph
     # All of the vertices will be connected to each other, as specified in the
     # problem description.
     def create_random_graph(num_vertices)
+      # Finds the constant K
+      k = Math.log2(num_vertices).floor
+
+      # Creates a new graph and add all the vertices
       graph = Graph.new
-      # Create and add all the vertices
       num_vertices.times { graph.add_vertex(Graph::Vertex.create_random) }
+
       # Iterate over the vertices to connect everything
       graph.vertices.combination(2).each do |vertex_1, vertex_2|
-        graph.create_edge(vertex_1, vertex_2)
+        graph.create_edge(vertex_1, vertex_2, k)
       end
-      # Sort each vertex's edge array and filter out far ones
-      graph.vertices.each { |vertex| vertex.edges.sort! }
-      graph.filter_edges
+
+      # Consolidade all vertices edges into a single edge array in the graph
+      # This is to make it easier to pass them to the view.
+      graph.find_edges
+
       # Return the created graph
       graph
     end
@@ -40,32 +46,19 @@ class Graph
     vertices << vertex
   end
 
-  # Creates a new vertex based on positions x and y and adds it to the graph
-  def create_vertex(x, y)
-    vertices << Graph::Vertex.new(x, y)
-  end
-
-  # Creates a new edge and adds it to the graph. 'from' and 'to' are vertices
-  def create_edge(from, to)
+  # Creates a new edge and adds it to the graph. 'from' and 'to' are vertices.
+  # The edge is only added if the "to" vertex is sufficiently close to "from",
+  # as only the max_edges nearest edges are allowed.
+  def create_edge(from, to, max_edges)
     new_edge = Graph::Edge.new(from, to)
-    from.add_edge(new_edge)
-    to.add_edge(new_edge)
-    edges << new_edge
+    if from.add_edge(new_edge, max_edges)
+      to.add_edge(new_edge, max_edges * 2)
+    end
   end
 
-  # "Filter" the edges of each vertex, only allowing the nearest K neighbours
-  # for each vertex, where K is log2(vertices.size)
-  def filter_edges
-    k = Math.log2(vertices.size).ceil
-    vertices.each do |vertex|
-      far_edges = vertex.farthest_edges(k)
-      vertex.remove_edges(far_edges)
-      @edges = @edges - far_edges
-    end
-    # selected_edges = vertices.inject([]) do |selected_edges, vertex|
-    #   selected_edges + vertex.closest_edges(k)
-    # end
-    # selected_edges.flatten.uniq
+  # Finds all edges from vertices and adds them all to the edges array
+  def find_edges
+    @edges = vertices.map(&:edges).flatten.uniq
   end
 
   # Transoforms the vertices into a string to be passed to the views

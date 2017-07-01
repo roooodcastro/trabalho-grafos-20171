@@ -1,12 +1,34 @@
 <header>
-  <h1>Algoritmo de Dijkstra para <%= @graph %></h1>
+  <h1>Algoritmo de Dijkstra para <%= @dijkstra.graph %></h1>
+  <p class="lead text-muted">
+    Clique nos botões abaixo para gerar um novo grafo.
+    O grafo de 1000 vértices pode demorar até 3s para ser gerado.
+  </p>
+  <div class="row">
+    <div class="col-md-2">
+      <a href="/?n=50" class="btn btn-success btn-block">Gerar 50</a>
+    </div>
+    <div class="col-md-2">
+      <a href="/?n=100" class="btn btn-info btn-block">Gerar 100</a>
+    </div>
+    <div class="col-md-2">
+      <a href="/?n=500" class="btn btn-warning btn-block">Gerar 500</a>
+    </div>
+    <div class="col-md-2">
+      <a href="/?n=1000" class="btn btn-danger btn-block">Gerar 1000</a>
+    </div>
+    <div class="col-md-2">
+      <a href="#" id="reanimate" class="btn btn-secondary btn-block">Re-Animar</a>
+    </div>
+  </div>
 </header>
 
 <div class="row">
   <div class="col text-center">
     <canvas id="canvas"
-            data-vertices="<%= @graph.serialize_vertices %>"
-            data-edges="<%= @graph.serialize_edges(@graph.edges) %>">
+            data-vertices="<%= @dijkstra.graph.serialize_vertices %>"
+            data-edges="<%= @dijkstra.graph.serialize_edges(@dijkstra.graph.edges) %>"
+            data-root="<%= @dijkstra.root_vertex.id %>">
     </canvas>
   </div>
 </div>

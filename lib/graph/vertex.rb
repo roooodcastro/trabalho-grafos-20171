@@ -2,8 +2,8 @@
 class Graph::Vertex
   include Comparable
 
-  attr_accessor :distance, :previous, :id
-  attr_reader :x, :y, :edges
+  attr_accessor :distance, :previous, :id, :next_vertices
+  attr_reader :x, :y, :edges, :farthest_edge_distance
 
   # Static (class) methods
   class << self
@@ -30,28 +30,46 @@ class Graph::Vertex
     @edges = []
     @distance = Float::INFINITY
     @previous = nil
+    @next_vertices = []
+    @farthest_edge_distance = 0
   end
 
-  # Adds an edge as neighbour of this vertex
-  def add_edge(edge)
+  # Adds an edge as neighbour of this vertex, but only if the number of edges
+  # are below the limit or the new edge is sufficiently small.
+  def add_edge(edge, max_edges)
+    # Don't even bother if there are too many edges and this one is too big
+    if edges.size >= max_edges && edge.length > farthest_edge_distance
+      return false
+    end
+
     edges << edge
+    edges.sort! # Keep them sorted so we instantly know which is the farthest
+    update_farthest_edge
+
+    # Return if number of edges is below limit, no need to delete an edge
+    return true if edges.size <= max_edges
+
+    # Now we need to delete the farthest edge to keep the limit number of edges
+    edges.pop
+    update_farthest_edge
+    true
   end
 
-  # Removes the specified edges from the neighbours
-  def remove_edges(edges_to_remove)
-    @edges = @edges - edges_to_remove
+  # Removes an edge. This is used by add_edge, when an edge needs to be removed
+  def remove_edge(edge)
+    edges.delete_at(edges.index(edge))
+    update_farthest_edge
+  end
+
+  # Updates the farthest edge distance
+  def update_farthest_edge
+    return @farthest_edge_distance = 0 if edges.empty?
+    @farthest_edge_distance = edges.last.length
   end
 
   # Return this vertex's neighbours, as vertices
   def neighbours
     edges.map { |edge| edge.other_vertex(self) }
-  end
-
-  # Returns the N closest neighbours to this vertex, where N is amount. If N is
-  # bigger than the total number of neighbours, all neighbours will be returned
-  def closest_edges(amount)
-    amount = [amount, neighbours.size].min
-    edges[0..(amount - 1)]
   end
 
   # Returns all edges except the N closest neighbours to this vertex, where N
@@ -67,10 +85,9 @@ class Graph::Vertex
     Graph::Vertex.distance(self, another_vertex)
   end
 
-  # Compares to vertices. Two vertices are the same if they occupy the same
-  # point. In theory, there could be two different vertices that occupy the same
-  # point, and therefore are wrongly assumed to be equal, but I'm hoping this
-  # doesn't happen here...
+  # Compares to vertices. First try to compare their distances to the root, as
+  # this is needed for Dijkstra, then, if they have the same distance, check if
+  # they occupy the same position.
   def <=>(other)
     return nil unless other.is_a? Graph::Vertex
 
@@ -81,6 +98,7 @@ class Graph::Vertex
     end
   end
 
+  # Used to print this Object in debug console
   def inspect
     to_s
   end
@@ -88,6 +106,7 @@ class Graph::Vertex
   # "to_string" method used to represent this object as a string
   # Format: id-x-y, example: '3-0.23478437-0.84736196'
   def to_s
-    [x, y, previous&.id].join('-')
+    next_vertices_string = next_vertices.map(&:id).compact.join('|')
+    [x, y, next_vertices_string].join('-')
   end
 end

@@ -36,7 +36,9 @@ class Dijkstra
   def try_to_change_previous(vertex, possible_previous, distance, queue)
     new_distance = possible_previous.distance + distance
     if new_distance < vertex.distance
-      graph.vertices[vertex.id].previous = possible_previous
+      vertex.previous.next_vertices.delete(vertex) if vertex.previous
+      vertex.previous = possible_previous
+      possible_previous.next_vertices << vertex
       queue.decrease_distance(vertex, new_distance)
     end
   end

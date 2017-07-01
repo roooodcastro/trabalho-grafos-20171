@@ -10,11 +10,12 @@ get '/' do
   num_vertices = [(params[:n].to_i || 50), 1000].min
 
   # Creates a random graph
-  @graph = Graph.create_random_graph(num_vertices)
+  graph = Graph.create_random_graph(num_vertices)
 
   # Runs the Dijkstra algorithm, which directly modifies the graph, setting each
   # vertex's previous and distance information.
-  Dijkstra.new(@graph).run
+  @dijkstra = Dijkstra.new(graph)
+  @dijkstra.run
 
   # Render the index template
   erb :index
