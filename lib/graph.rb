@@ -52,7 +52,9 @@ class Graph
   def create_edge(from, to, max_edges)
     new_edge = Graph::Edge.new(from, to)
     if from.add_edge(new_edge, max_edges)
-      to.add_edge(new_edge, max_edges * 2)
+      unless to.add_edge(new_edge, max_edges)
+        from.remove_edge(new_edge)
+      end
     end
   end
 
