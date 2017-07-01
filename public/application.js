@@ -172,7 +172,7 @@ function calcWaypoints(fromX, fromY, toX, toY) {
 
     var dx = parseFloat(toX) - parseFloat(fromX);
     var dy = parseFloat(toY) - parseFloat(fromY);
-    for (var j = 0; j < 50; j++) {
+    for (var j = 0; j <= 50; j++) {
         var x = parseFloat(fromX) + dx * j / 50;
         var y = parseFloat(fromY) + dy * j / 50;
         waypoints.push({ x: x, y: y });

@@ -7,7 +7,7 @@ set :public_folder, 'public' # Public folder to get 'application.js' from
 get '/' do
   # Gets the number of vertices from params, with 50 as default
   # Limits the absolute maximum number to 1000, to prevent eternal load times
-  num_vertices = [(params[:n].to_i || 50), 1000].min
+  num_vertices = [(params[:n] || 50).to_i, 1000].min
 
   # Creates a random graph
   graph = Graph.create_random_graph(num_vertices)

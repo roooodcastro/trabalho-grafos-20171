@@ -50,13 +50,16 @@ class Graph::Vertex
     return true if edges.size <= max_edges
 
     # Now we need to delete the farthest edge to keep the limit number of edges
-    edges.pop
+    removed_edge = edges.pop
+    removed_edge.other_vertex(self).remove_edge(removed_edge)
     update_farthest_edge
     true
   end
 
   # Removes an edge. This is used by add_edge, when an edge needs to be removed
   def remove_edge(edge)
+    index_to_remove = edges.index(edge)
+    return unless index_to_remove
     edges.delete_at(edges.index(edge))
     update_farthest_edge
   end
