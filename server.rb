@@ -1,5 +1,5 @@
 require 'sinatra'            # Sinatra web framework
-require 'pry'                # Debugging tool
+# require 'pry'                # Debugging tool
 require_relative 'autoload'  # Actual program classes and modules
 
 set :public_folder, 'public' # Public folder to get 'application.js' from
